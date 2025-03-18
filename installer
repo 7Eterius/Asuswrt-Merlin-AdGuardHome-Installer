@@ -780,7 +780,7 @@ inst_AdGuardHome() {
 			fi
 		fi
 	else
-		if ! download_file "${BASE_DIR}" 644 "https://cors.isteed.cc/https://github.com/AdguardTeam/AdGuardHome/releases/download/${REMOTE_VER}/${ADGUARD_TAR}"; then
+		if ! download_file "${BASE_DIR}" 644 "https://github.com/AdguardTeam/AdGuardHome/releases/download/v0.107.56/${ADGUARD_TAR}"; then
 			PTXT "${ERROR} Unable to download AdGuardHome package for your router"
 			end_op_message 1
 			return
