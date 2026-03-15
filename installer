@@ -294,6 +294,12 @@ check_connection() {
 		return 1
 	done
 }
+
+wait_for_connection() {
+	(while { ! check_connection; }; do sleep 1s; done) &
+	local PID="$!"
+	wait "${PID}" 2>/dev/null
+}
 ########################################################################################################################
 
 check_dns_environment() {
@@ -328,9 +334,7 @@ check_dns_environment() {
 	if [ "${NVCHECK}" != "0" ]; then
 		{ nvram commit; }
 		{ service restart_dnsmasq >/dev/null 2>&1; }
-		(while { ! check_connection; }; do sleep 1s; done) &
-		local PID="$!"
-		wait "${PID}" 2>/dev/null
+		wait_for_connection
 	fi
 	PTXT "${INFO} DNS Environment is Ready."
 }
@@ -418,9 +422,7 @@ check_dns_filter() {
 	if [ "${NVCHECK}" != "0" ]; then
 		{ nvram commit; }
 		{ service "restart_firewall;restart_dnsmasq" >/dev/null 2>&1; }
-		(while { ! check_connection; }; do sleep 1s; done) &
-		local PID="$!"
-		wait "${PID}" 2>/dev/null
+		wait_for_connection
 	fi
 }
 
@@ -529,7 +531,7 @@ check_version() {
 					"${INFO} for any configuration needs. "
 			fi
 		elif [ -z "${LINSTALL}" ] && [ -z "${RMNSTALL}" ] && [ -z "$1" ]; then
-			while { ! check_connection; }; do sleep 1s; done && check_version x
+			wait_for_connection && check_version x
 		else
 			check_version x x
 		fi
