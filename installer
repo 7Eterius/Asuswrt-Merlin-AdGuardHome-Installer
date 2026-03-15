@@ -655,7 +655,7 @@ download_file() {
 			COUNT="0"
 			while [ "${COUNT}" -lt 3 ]; do
 				PTXT "${INFO} Downloading ${FILENAME}"
-				if curl --retry 5 --connect-timeout 25 --retry-delay 5 --max-time $((5 * 25)) --retry-connrefused -L -k -s "${URL}" -o "${TARG}/${FILENAME}"; then
+				if curl --retry 5 --connect-timeout 25 --retry-delay 5 --max-time $((5 * 25)) --retry-connrefused -L -s "${URL}" -o "${TARG}/${FILENAME}"; then
 					chmod "${PERM}" "${TARG}/${FILENAME}"
 					break
 				fi
