@@ -1,6 +1,10 @@
 <a href="https://ibb.co/Zm7hLhD"><img src="https://i.ibb.co/0tvfDfb/image.png" alt="image" border="0"></a>
 # Asuswrt-Merlin-AdGuardHome-Installer:
 The Official Installer of AdGuardHome for Asuswrt-Merlin
+
+> [!IMPORTANT]
+> This version of the installer is updated specifically to work in Russia. It downloads AdGuardHome binaries directly from GitHub releases to bypass blocks on the official AdGuard website.
+
 # Requirements:
 - ARM based ASUS routers that use Asuswrt-Merlin Firmware, and Entware Repository.
 - JFFS support and enabled.
