@@ -783,7 +783,16 @@ inst_AdGuardHome() {
 			fi
 		fi
 	else
-		if ! download_file "${BASE_DIR}" 644 "https://github.com/AdguardTeam/AdGuardHome/releases/download/v0.107.73/AdGuardHome_linux_arm64.tar.gz"; then
+		local VERSION
+		case "${2}" in
+		beta | edge)
+			VERSION="${REMOTE_BETA}"
+			;;
+		*)
+			VERSION="${REMOTE_VER}"
+			;;
+		esac
+		if ! download_file "${BASE_DIR}" 644 "https://github.com/AdguardTeam/AdGuardHome/releases/download/${VERSION}/AdGuardHome_${ADGUARD_ARCH}.tar.gz"; then
 			PTXT "${ERROR} Unable to download AdGuardHome package for your router"
 			end_op_message 1
 			return
