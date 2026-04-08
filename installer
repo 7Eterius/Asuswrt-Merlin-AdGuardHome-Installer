@@ -492,12 +492,13 @@ check_version() {
 						"${INFO} Run Option 1 of the Installer to upgrade Asuswrt-Merlin-AdGuardHome-Installer."
 					AUTO_UPDATE="update"
 				fi
-				local ADGUARD_BRANCH
+				local ADGUARD_BRANCH ADGUARDHOME_VER
 				ADGUARD_BRANCH="$(awk -F'=' '/ADGUARD_BRANCH/ {print $2}' "$CONF_FILE" | sed -e 's/^"//' -e 's/"$//')"
-				[ -z "$(${AGH_FILE} --version | cut -d" " -f4-)" ] && exit 1
+				ADGUARDHOME_VER="$(${AGH_FILE} --version | cut -d" " -f4-)"
+				[ -z "${ADGUARDHOME_VER}" ] && exit 1
 				[ -z "${REMOTE_VER}" ] && exit 1
 				[ -z "${REMOTE_BETA}" ] && exit 1
-				if { [ "${REMOTE_VER}" != "$(${AGH_FILE} --version | cut -d" " -f4-)" ] && [ "${ADGUARD_BRANCH}" = "release" ]; } || { [ "${REMOTE_BETA}" != "$(${AGH_FILE} --version | cut -d" " -f4-)" ] && [ "${ADGUARD_BRANCH}" = "beta" ]; }; then
+				if { [ "${REMOTE_VER}" != "${ADGUARDHOME_VER}" ] && [ "${ADGUARD_BRANCH}" = "release" ]; } || { [ "${REMOTE_BETA}" != "${ADGUARDHOME_VER}" ] && [ "${ADGUARD_BRANCH}" = "beta" ]; }; then
 					case "${ADGUARD_BRANCH}" in
 					release)
 						PTXT "${INFO} New RELEASE ADGUARDHOME_VER=${REMOTE_VER} Available!"
@@ -520,7 +521,7 @@ check_version() {
 						;;
 					esac
 				fi
-				PTXT "${INFO} ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-)" \
+				PTXT "${INFO} ADGUARDHOME_VER=${ADGUARDHOME_VER}" \
 					"${INFO} Run Option 1 to if you want to change builds or upgrade when updates are available." \
 					"${INFO} To visit AdGuardHome," \
 					"${INFO} please go to http://$(nvram get lan_ipaddr):$(awk -F: '/.*address\:.*/{ print $3 }' ${YAML_FILE})." \
@@ -742,27 +743,28 @@ inst_AdGuardHome() {
 		fi
 		if [ "${1:-RESTORE}" != "RESTORE" ]; then
 			if [ "${1:-install}" != "update" ]; then choose_branch; fi
-			local ADGUARD_BRANCH
+			local ADGUARD_BRANCH ADGUARDHOME_VER
 			ADGUARD_BRANCH="$(awk -F'=' '/ADGUARD_BRANCH/ {print $2}' "${CONF_FILE}" | sed -e 's/^"//' -e 's/"$//')"
 			if [ ! -f "${AGH_FILE}" ]; then
 				inst_AdGuardHome "${1:-install}" "$ADGUARD_BRANCH"
 			else
-				[ -z "$("${AGH_FILE}" --version | cut -d" " -f4-)" ] && exit 1
+				ADGUARDHOME_VER="$(${AGH_FILE} --version | cut -d" " -f4-)"
+				[ -z "${ADGUARDHOME_VER}" ] && exit 1
 				[ -z "${REMOTE_VER}" ] && exit 1
 				[ -z "${REMOTE_BETA}" ] && exit 1
-				if { [ "${REMOTE_VER}" != "$("${AGH_FILE}" --version | cut -d" " -f4-)" ] && [ "${ADGUARD_BRANCH}" = "release" ]; } || { [ "${REMOTE_BETA}" != "$("${AGH_FILE}" --version | cut -d" " -f4-)" ] && [ "${ADGUARD_BRANCH}" = "beta" ]; } || [ "${ADGUARD_BRANCH}" = "edge" ]; then
+				if { [ "${REMOTE_VER}" != "${ADGUARDHOME_VER}" ] && [ "${ADGUARD_BRANCH}" = "release" ]; } || { [ "${REMOTE_BETA}" != "${ADGUARDHOME_VER}" ] && [ "${ADGUARD_BRANCH}" = "beta" ]; } || [ "${ADGUARD_BRANCH}" = "edge" ]; then
 					case "${ADGUARD_BRANCH}" in
 					release)
 						PTXT "${INFO} New RELEASE ADGUARDHOME_VER=${REMOTE_VER} Available!" \
-							"${INFO} Updating ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-) to ${REMOTE_VER}."
+							"${INFO} Updating ADGUARDHOME_VER=${ADGUARDHOME_VER} to ${REMOTE_VER}."
 						;;
 					beta)
 						PTXT "${INFO} New BETA ADGUARDHOME_VER=${REMOTE_BETA} Available!" \
-							"${INFO} Updating ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-) to ${REMOTE_BETA}."
+							"${INFO} Updating ADGUARDHOME_VER=${ADGUARDHOME_VER} to ${REMOTE_BETA}."
 						;;
 					edge)
 						PTXT "${INFO} ADGUARDHOME_BUILD=Edge" \
-							"${INFO} Downloading the lastest Edge version to replace ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-)."
+							"${INFO} Downloading the lastest Edge version to replace ADGUARDHOME_VER=${ADGUARDHOME_VER}."
 						;;
 					esac
 					inst_AdGuardHome "${1:-update}" "${ADGUARD_BRANCH}"
@@ -771,12 +773,12 @@ inst_AdGuardHome() {
 					release)
 						PTXT "${INFO} ADGUARDHOME_BUILD=Release" \
 							"${INFO} No new release version available." \
-							"${INFO} ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-)"
+							"${INFO} ADGUARDHOME_VER=${ADGUARDHOME_VER}"
 						;;
 					beta)
 						PTXT "${INFO} ADGUARDHOME_BUILD=Beta" \
 							"${INFO} No new beta version available." \
-							"${INFO} ADGUARDHOME_VER=$(${AGH_FILE} --version | cut -d" " -f4-)"
+							"${INFO} ADGUARDHOME_VER=${ADGUARDHOME_VER}"
 						;;
 					esac
 				fi
